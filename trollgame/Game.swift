@@ -8,6 +8,24 @@
 
 import Foundation
 
+typealias Position = (x: Int, y: Int)
+
+func +(lhs: Position, rhs: Position) -> Position {
+    return (x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+}
+
+func +=(lhs: inout Position, rhs: Position) {
+    lhs = lhs + rhs
+}
+
+func -(lhs: Position, rhs: Position) -> Position {
+    return (x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+}
+
+func -=(lhs: inout Position, rhs: Position) {
+    lhs = lhs - rhs
+}
+
 class Game {
     let renderer: Renderer
     let inputHandler: InputHandler
@@ -28,6 +46,7 @@ class Game {
         world.entities.append(Entity(position: world.randomPosition(.wallTile),
                                      tile: World.Tile.playerDownTile,
                                      (PlayerInputComponent(), .input),
+                                     (MoveBlocksComponent(), .physics), // move blocks before position determined
                                      (EntityPhysicsComponent(), .physics),
                                      (FollowedByViewportComponent(), .preRender)))
     }

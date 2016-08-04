@@ -11,63 +11,32 @@ import Foundation
 class PlayerInputComponent: EntityComponent {
     weak var entity: Entity!
     
-    enum Direction {
-        case none
-        case up, down, left, right
-        
-        init?(playerTile: World.Tile) {
-            switch playerTile {
-            case .playerUpTile:
-                self = .up
-            case .playerDownTile:
-                self = .down
-            case .playerLeftTile:
-                self = .left
-            case .playerRightTile:
-                self = .right
-            default:
-                return nil
-            }
-        }
-    }
-    
-    var lastMovement: Direction = .none
+    var newDirection: Direction? = nil
     
     func update(world: World) {
-        guard lastMovement != .none,
-            let currentDirection = Direction(playerTile: entity.tile) else { return }
+        guard let newDirection = newDirection else { return }
         
-        // should copy, as value type
-        entity.newPosition = entity.position
-        let shouldMove = currentDirection == lastMovement
+        let shouldMove = entity.direction == newDirection
         
-        switch lastMovement {
+        switch newDirection {
         case .up:
-            if shouldMove {
-                entity.newPosition!.1 -= 1
-            }
             entity.tile = .playerUpTile
             break
         case .down:
-            if shouldMove {
-                entity.newPosition!.1 += 1
-            }
             entity.tile = .playerDownTile
         case .left:
-            if shouldMove {
-                entity.newPosition!.0 -= 1
-            }
             entity.tile = .playerLeftTile
         case .right:
-            if shouldMove {
-                entity.newPosition!.0 += 1
-            }
             entity.tile = .playerRightTile
-        default:
-            break
         }
         
-        lastMovement = .none
+        entity.direction = newDirection
+        
+        if shouldMove {
+            entity.newPosition = entity.position + newDirection.deltaPosition
+        }
+        
+        self.newDirection = nil
     }
     
     func entityBecameAvailable() {
@@ -82,16 +51,16 @@ class PlayerInputComponent: EntityComponent {
         
         switch key {
         case .w:
-            lastMovement = .up
+            newDirection = .up
             break
         case .a:
-            lastMovement = .left
+            newDirection = .left
             break
         case .r:
-            lastMovement = .down
+            newDirection = .down
             break
         case .s:
-            lastMovement = .right
+            newDirection = .right
             break
         default:
             break

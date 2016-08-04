@@ -8,8 +8,6 @@
 
 import Foundation
 
-typealias Position = (x: Int, y: Int)
-
 protocol EntityComponent {
     weak var entity: Entity! { get set }
     func entityBecameAvailable()
@@ -19,6 +17,38 @@ protocol EntityComponent {
 extension EntityComponent {
     func entityBecameAvailable() { }
     func update(world: World) { }
+}
+
+enum Direction {
+    case up, down, left, right
+    
+    init?(delta: Position) {
+        switch delta {
+        case (0, -1):
+            self = .up
+        case (0, 1):
+            self = .down
+        case (-1, 0):
+            self = .left
+        case (1, 0):
+            self = .right
+        default:
+            return nil
+        }
+    }
+    
+    var deltaPosition: Position {
+        switch self {
+        case .up:
+            return (x: 0, y: -1)
+        case .down:
+            return (x: 0, y: 1)
+        case .left:
+            return (x: -1, y: 0)
+        case .right:
+            return (x: 1, y: 0)
+        }
+    }
 }
 
 class Entity {
@@ -38,11 +68,13 @@ class Entity {
     var position: Position
     var newPosition: Position? = nil
     var tile: World.Tile
+    var direction: Direction
     // // // // // // // // // // // //
     
-    init(position: Position, tile: World.Tile, components: [(EntityComponent, NominatedPass)]) {
+    init(position: Position, tile: World.Tile, direction: Direction = .down, components: [(EntityComponent, NominatedPass)]) {
         self.position = position
         self.tile = tile
+        self.direction = direction
         for (component, pass) in components {
             if self.components[pass] == nil {
                 self.components[pass] = []
@@ -54,8 +86,8 @@ class Entity {
         }
     }
     
-    convenience init(position: Position, tile: World.Tile, _ components: (EntityComponent, NominatedPass)...) {
-        self.init(position: position, tile: tile, components: components)
+    convenience init(position: Position, tile: World.Tile, direction: Direction = .down, _ components: (EntityComponent, NominatedPass)...) {
+        self.init(position: position, tile: tile, direction: direction, components: components)
     }
     
     func update(_ pass: NominatedPass, world: World) {
