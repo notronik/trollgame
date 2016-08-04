@@ -8,10 +8,20 @@
 
 import Foundation
 
-typealias Position = (x: Int, y: Int)
+// MARK: Position -
+struct Position: Hashable {
+    var x, y: Int
+    var tuple: (x: Int, y: Int) {
+        return (x: x, y: y)
+    }
+    
+    var hashValue: Int {
+        return x.hashValue ^ y.hashValue
+    }
+}
 
 func +(lhs: Position, rhs: Position) -> Position {
-    return (x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    return Position(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 
 func +=(lhs: inout Position, rhs: Position) {
@@ -19,14 +29,21 @@ func +=(lhs: inout Position, rhs: Position) {
 }
 
 func -(lhs: Position, rhs: Position) -> Position {
-    return (x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    return Position(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
 func -=(lhs: inout Position, rhs: Position) {
     lhs = lhs - rhs
 }
 
+func ==(lhs: Position, rhs: Position) -> Bool {
+    return lhs.tuple == rhs.tuple
+}
+
+// MARK: Game -
 class Game {
+    var running = true
+    
     let renderer: Renderer
     let inputHandler: InputHandler
     let world: World
@@ -42,13 +59,28 @@ class Game {
         
         NotificationCenter.default.addObserver(self, selector: #selector(Game.keyPressed(_:)), name: .InputKeyPressed, object: nil)
         
-        // Create entities
-        world.entities.append(Entity(position: world.randomPosition(.wallTile),
-                                     tile: World.Tile.playerDownTile,
-                                     (PlayerInputComponent(), .input),
-                                     (MoveBlocksComponent(), .physics), // move blocks before position determined
-                                     (EntityPhysicsComponent(), .physics),
-                                     (FollowedByViewportComponent(), .preRender)))
+        // Create player
+        let player = Entity(position: world.randomPosition(.wallTile, .crossTile),
+                            tile: DirectionalTile([
+                                .up : .playerUpTile,
+                                .down : .playerDownTile,
+                                .left : .playerLeftTile,
+                                .right : .playerRightTile
+                                ]),
+                            (PlayerInputComponent(), .input),
+//                            (AIInputComponent(goal: Position(x: 2, y: 22)), .input), // AI component can even be the player
+                            (MoveBlocksComponent(), .physics), // move blocks before position determined
+                            (EntityPhysicsComponent(), .physics),
+                            (FollowedByViewportComponent(), .preRender))
+        world.entities.append(player)
+        
+        // Create trolls
+        for _ in 0..<5 {
+            world.entities.append(Entity(position: world.randomPosition(.wallTile),
+                                         tile: SingleTile(.trollTile),
+                                         (AIInputComponent(target: player), .input),
+                                         (EntityPhysicsComponent(), .physics)))
+        }
     }
     
     deinit {
@@ -56,17 +88,25 @@ class Game {
     }
     
     func terminate() {
-        CFRunLoopStop(CFRunLoopGetMain())
+        running = false
     }
     
-    func update() {
-        inputHandler.handleInput()
-        world.update(.input)
-//        world.update(.update)
-        world.update(.physics)
+    func run() {
         world.update(.preRender)
         renderer.render(world: world)
         world.update(.postRender)
+        while running {
+            inputHandler.handleInput()
+            if !running {
+                break
+            }
+            
+            world.update(.input)
+            world.update(.physics)
+            world.update(.preRender)
+            renderer.render(world: world)
+            world.update(.postRender)
+        }
     }
     
     @objc func keyPressed(_ notification: Notification) {

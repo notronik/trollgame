@@ -11,7 +11,7 @@ import ncurses
 
 class TextInputHandler: InputHandler {
     init() {
-        timeout(0)
+//        timeout(0)
     }
     
     deinit {
@@ -19,8 +19,6 @@ class TextInputHandler: InputHandler {
     }
     
     func handleInput() {
-        // flush stdin
-        fflush(stdin)
         let character = getch()
         
         // no character was obtained

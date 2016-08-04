@@ -9,7 +9,7 @@
 import Foundation
 
 class EntityPhysicsComponent: EntityComponent {
-    static let impassable: [World.Tile] = [.wallTile]
+    static let impassable: [Tile] = [.wallTile]
     
     var entity: Entity!
     

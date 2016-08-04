@@ -33,7 +33,8 @@ class TextRenderer: Renderer {
         createColorPair(.wallTile, fg: COLOR_GREEN, bg: COLOR_BLACK)
         createColorPair(.emptyTile, fg: -1, bg: COLOR_BLACK)
         createColorPair(.crossTile, fg: COLOR_MAGENTA, bg: COLOR_BLACK)
-        createColorPair(.playerTile, fg: COLOR_RED, bg: COLOR_BLACK)
+        createColorPair(.playerTile, fg: COLOR_CYAN, bg: COLOR_BLACK)
+        createColorPair(.trollTile, fg: COLOR_RED, bg: COLOR_BLACK)
     }
     
     deinit {
@@ -53,7 +54,7 @@ class TextRenderer: Renderer {
                 guard screenX >= 0 && screenX < world.lWidth else { continue }
                 
                 let char = row[screenX]
-                if let tile = World.Tile(rawValue: char) {
+                if let tile = Tile(rawValue: char) {
                     withColor(pair: ColorPair(for: tile)) {
                         putChar(y + offset.y, x + offset.x, char)
                     }
@@ -68,9 +69,10 @@ class TextRenderer: Renderer {
             guard world.inViewport(entity.position) else { continue }
             
             // i is row, j is column, but this is reverse of x, y
-            let (j, i) = entity.position
-            withColor(pair: ColorPair(for: entity.tile), {
-                putChar(i - world.origin.y + offset.y, j - world.origin.x + offset.x, entity.tile.rawValue)
+            let (j, i) = entity.position.tuple
+            let tile = entity.tile.tile(for: entity.direction)
+            withColor(pair: ColorPair(for: tile), {
+                putChar(i - world.origin.y + offset.y, j - world.origin.x + offset.x, tile.rawValue)
             })
         }
         refresh()
@@ -102,8 +104,9 @@ extension TextRenderer {
         case emptyTile
         case crossTile
         case playerTile
+        case trollTile
         
-        init(for tile: World.Tile) {
+        init(for tile: Tile) {
             switch tile {
             case .wallTile:
                 self = .wallTile
@@ -113,6 +116,8 @@ extension TextRenderer {
                 self = .crossTile
             case .playerUpTile, .playerDownTile, .playerLeftTile, .playerRightTile:
                 self = .playerTile
+            case .trollTile:
+                self = .trollTile
             }
         }
     }

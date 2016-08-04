@@ -14,7 +14,7 @@ class World {
     
     // Viewport
     let vWidth, vHeight: Int
-    var origin: Position = (x: 0, y: 0)
+    var origin = Position(x: 0, y: 0)
     // Level
     var lWidth, lHeight: Int
     
@@ -39,8 +39,8 @@ class World {
         self.init(width: width, height: height, string: try String(contentsOf: file, encoding: .utf8))
     }
     
-    func tile(at position: Position) -> World.Tile {
-        return World.Tile(rawValue: matrix[position.y][position.x]) ?? .emptyTile
+    func tile(at position: Position) -> Tile {
+        return Tile(rawValue: matrix[position.y][position.x]) ?? .emptyTile
     }
     
     func inWorld(_ position: Position) -> Bool {
@@ -51,8 +51,8 @@ class World {
         return position.x >= origin.x && position.x - origin.x < vWidth && position.y >= origin.y && position.y - origin.y < vHeight
     }
     
-    func randomPosition(impassable: [World.Tile]) -> Position {
-        let position = (x: Int(arc4random_uniform(UInt32(lWidth))), y: Int(arc4random_uniform(UInt32(lHeight))))
+    func randomPosition(impassable: [Tile]) -> Position {
+        let position = Position(x: Int(arc4random_uniform(UInt32(lWidth))), y: Int(arc4random_uniform(UInt32(lHeight))))
         if inWorld(position) && !impassable.contains(tile(at: position)) {
             return position
         } else {
@@ -60,7 +60,7 @@ class World {
         }
     }
     
-    func randomPosition(_ impassable: World.Tile...) -> Position {
+    func randomPosition(_ impassable: Tile...) -> Position {
         return randomPosition(impassable: impassable)
     }
 }
@@ -74,15 +74,42 @@ extension World {
     }
 }
 
-// MARK: Extension for tile types
-extension World {
-    enum Tile: UnicodeScalar {
-        case wallTile = "#"
-        case emptyTile = " "
-        case crossTile = "X"
-        case playerUpTile = "^"
-        case playerDownTile = "v"
-        case playerLeftTile = "<"
-        case playerRightTile = ">"
+// MARK: Tile types
+enum Tile: UnicodeScalar {
+    case wallTile = "#"
+    case emptyTile = " "
+    case crossTile = "X"
+    case playerUpTile = "^"
+    case playerDownTile = "v"
+    case playerLeftTile = "<"
+    case playerRightTile = ">"
+    case trollTile = "T"
+}
+
+protocol TileProvider {
+    func tile(for direction: Direction) -> Tile
+}
+
+struct SingleTile: TileProvider {
+    let tile: Tile
+    
+    init(_ tile: Tile) {
+        self.tile = tile
+    }
+    
+    func tile(for direction: Direction) -> Tile {
+        return self.tile
+    }
+}
+
+struct DirectionalTile: TileProvider {
+    let tiles: [Direction: Tile]
+    
+    init(_ tiles: [Direction: Tile]) {
+        self.tiles = tiles
+    }
+    
+    func tile(for direction: Direction) -> Tile {
+        return self.tiles[direction] ?? .crossTile
     }
 }

@@ -8,14 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		240FC0C31D5257B300BED048 /* Trap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240FC0C21D5257B300BED048 /* Trap.swift */; };
-		240FC0C61D528DFB00BED048 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240FC0C51D528DFB00BED048 /* Atomic.swift */; };
 		240FC0C91D528F4100BED048 /* InputHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240FC0C81D528F4100BED048 /* InputHandler.swift */; };
 		240FC0CB1D528F4B00BED048 /* TextInputHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240FC0CA1D528F4B00BED048 /* TextInputHandler.swift */; };
-		240FC0CE1D52963F00BED048 /* Boxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240FC0CD1D52963F00BED048 /* Boxes.swift */; };
 		242A72301D539F4100B9932F /* MoveBlocksComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 242A722F1D539F4100B9932F /* MoveBlocksComponent.swift */; };
+		242A72321D53BA0300B9932F /* AIInputComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 242A72311D53BA0300B9932F /* AIInputComponent.swift */; };
+		242A72341D53C54E00B9932F /* PriorityQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 242A72331D53C54E00B9932F /* PriorityQueue.swift */; };
 		247623F71D5354D000758E98 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247623F61D5354D000758E98 /* Entity.swift */; };
 		247623FA1D53597400758E98 /* PlayerInputComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247623F91D53597400758E98 /* PlayerInputComponent.swift */; };
-		247623FC1D53607D00758E98 /* Queue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247623FB1D53607D00758E98 /* Queue.swift */; };
 		247623FE1D53686E00758E98 /* EntityPhysicsComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247623FD1D53686E00758E98 /* EntityPhysicsComponent.swift */; };
 		247624001D5384DC00758E98 /* FollowedByViewportComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 247623FF1D5384DC00758E98 /* FollowedByViewportComponent.swift */; };
 		24D803AE1D523C1300004826 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D803AD1D523C1300004826 /* main.swift */; };
@@ -39,14 +38,13 @@
 
 /* Begin PBXFileReference section */
 		240FC0C21D5257B300BED048 /* Trap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Trap.swift; path = util/Trap.swift; sourceTree = "<group>"; };
-		240FC0C51D528DFB00BED048 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Atomic.swift; path = util/Atomic.swift; sourceTree = "<group>"; };
 		240FC0C81D528F4100BED048 /* InputHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputHandler.swift; path = input/InputHandler.swift; sourceTree = "<group>"; };
 		240FC0CA1D528F4B00BED048 /* TextInputHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextInputHandler.swift; path = input/TextInputHandler.swift; sourceTree = "<group>"; };
-		240FC0CD1D52963F00BED048 /* Boxes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Boxes.swift; path = util/Boxes.swift; sourceTree = "<group>"; };
 		242A722F1D539F4100B9932F /* MoveBlocksComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MoveBlocksComponent.swift; path = entities/MoveBlocksComponent.swift; sourceTree = "<group>"; };
+		242A72311D53BA0300B9932F /* AIInputComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AIInputComponent.swift; path = input/AIInputComponent.swift; sourceTree = "<group>"; };
+		242A72331D53C54E00B9932F /* PriorityQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PriorityQueue.swift; path = util/PriorityQueue.swift; sourceTree = "<group>"; };
 		247623F61D5354D000758E98 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = entities/Entity.swift; sourceTree = "<group>"; };
 		247623F91D53597400758E98 /* PlayerInputComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerInputComponent.swift; path = entities/PlayerInputComponent.swift; sourceTree = "<group>"; };
-		247623FB1D53607D00758E98 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Queue.swift; path = util/Queue.swift; sourceTree = "<group>"; };
 		247623FD1D53686E00758E98 /* EntityPhysicsComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EntityPhysicsComponent.swift; path = entities/EntityPhysicsComponent.swift; sourceTree = "<group>"; };
 		247623FF1D5384DC00758E98 /* FollowedByViewportComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FollowedByViewportComponent.swift; path = entities/FollowedByViewportComponent.swift; sourceTree = "<group>"; };
 		24D803AA1D523C1300004826 /* trollgame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = trollgame; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,9 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				240FC0C21D5257B300BED048 /* Trap.swift */,
-				240FC0C51D528DFB00BED048 /* Atomic.swift */,
-				240FC0CD1D52963F00BED048 /* Boxes.swift */,
-				247623FB1D53607D00758E98 /* Queue.swift */,
+				242A72331D53C54E00B9932F /* PriorityQueue.swift */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -106,6 +102,7 @@
 				247623FD1D53686E00758E98 /* EntityPhysicsComponent.swift */,
 				242A722F1D539F4100B9932F /* MoveBlocksComponent.swift */,
 				247623FF1D5384DC00758E98 /* FollowedByViewportComponent.swift */,
+				242A72311D53BA0300B9932F /* AIInputComponent.swift */,
 			);
 			name = Entities;
 			sourceTree = "<group>";
@@ -201,19 +198,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				240FC0C31D5257B300BED048 /* Trap.swift in Sources */,
-				240FC0CE1D52963F00BED048 /* Boxes.swift in Sources */,
 				24D803AE1D523C1300004826 /* main.swift in Sources */,
+				242A72341D53C54E00B9932F /* PriorityQueue.swift in Sources */,
 				24D803B71D52453F00004826 /* Renderer.swift in Sources */,
-				247623FC1D53607D00758E98 /* Queue.swift in Sources */,
 				240FC0C91D528F4100BED048 /* InputHandler.swift in Sources */,
 				24D803B91D52455600004826 /* World.swift in Sources */,
 				247623FA1D53597400758E98 /* PlayerInputComponent.swift in Sources */,
 				24D803BB1D52461700004826 /* TextRenderer.swift in Sources */,
 				247623F71D5354D000758E98 /* Entity.swift in Sources */,
+				242A72321D53BA0300B9932F /* AIInputComponent.swift in Sources */,
 				247623FE1D53686E00758E98 /* EntityPhysicsComponent.swift in Sources */,
 				247624001D5384DC00758E98 /* FollowedByViewportComponent.swift in Sources */,
 				242A72301D539F4100B9932F /* MoveBlocksComponent.swift in Sources */,
-				240FC0C61D528DFB00BED048 /* Atomic.swift in Sources */,
 				24D803B51D52452000004826 /* Game.swift in Sources */,
 				240FC0CB1D528F4B00BED048 /* TextInputHandler.swift in Sources */,
 			);

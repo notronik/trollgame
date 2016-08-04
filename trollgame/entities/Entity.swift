@@ -19,11 +19,11 @@ extension EntityComponent {
     func update(world: World) { }
 }
 
-enum Direction {
-    case up, down, left, right
+enum Direction: UInt32 {
+    case up = 0, down, left, right
     
     init?(delta: Position) {
-        switch delta {
+        switch delta.tuple {
         case (0, -1):
             self = .up
         case (0, 1):
@@ -40,14 +40,18 @@ enum Direction {
     var deltaPosition: Position {
         switch self {
         case .up:
-            return (x: 0, y: -1)
+            return Position(x: 0, y: -1)
         case .down:
-            return (x: 0, y: 1)
+            return Position(x: 0, y: 1)
         case .left:
-            return (x: -1, y: 0)
+            return Position(x: -1, y: 0)
         case .right:
-            return (x: 1, y: 0)
+            return Position(x: 1, y: 0)
         }
+    }
+    
+    static func random() -> Direction {
+        return Direction(rawValue: arc4random_uniform(4))!
     }
 }
 
@@ -67,11 +71,11 @@ class Entity {
     // Entity state // // // // // // /
     var position: Position
     var newPosition: Position? = nil
-    var tile: World.Tile
+    var tile: TileProvider
     var direction: Direction
     // // // // // // // // // // // //
     
-    init(position: Position, tile: World.Tile, direction: Direction = .down, components: [(EntityComponent, NominatedPass)]) {
+    init(position: Position, tile: TileProvider, direction: Direction = .down, components: [(EntityComponent, NominatedPass)]) {
         self.position = position
         self.tile = tile
         self.direction = direction
@@ -86,7 +90,7 @@ class Entity {
         }
     }
     
-    convenience init(position: Position, tile: World.Tile, direction: Direction = .down, _ components: (EntityComponent, NominatedPass)...) {
+    convenience init(position: Position, tile: TileProvider, direction: Direction = .down, _ components: (EntityComponent, NominatedPass)...) {
         self.init(position: position, tile: tile, direction: direction, components: components)
     }
     

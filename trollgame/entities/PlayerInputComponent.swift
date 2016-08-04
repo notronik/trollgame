@@ -17,19 +17,6 @@ class PlayerInputComponent: EntityComponent {
         guard let newDirection = newDirection else { return }
         
         let shouldMove = entity.direction == newDirection
-        
-        switch newDirection {
-        case .up:
-            entity.tile = .playerUpTile
-            break
-        case .down:
-            entity.tile = .playerDownTile
-        case .left:
-            entity.tile = .playerLeftTile
-        case .right:
-            entity.tile = .playerRightTile
-        }
-        
         entity.direction = newDirection
         
         if shouldMove {

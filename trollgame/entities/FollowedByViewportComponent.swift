@@ -12,7 +12,7 @@ class FollowedByViewportComponent: EntityComponent {
     var entity: Entity!
     
     func update(world: World) {
-        let (x, y) = entity.position
+        let (x, y) = entity.position.tuple
         
         let leftAnchor = world.vWidth / 2 - 0
         let rightAnchor = world.lWidth - world.vWidth / 2
