@@ -42,6 +42,7 @@ class TextRenderer: Renderer {
     }
     
     func render(world: World) {
+        // Render level
         for y in 0..<world.vHeight {
             let screenY = y + world.origin.y
             guard screenY >= 0 && screenY < world.lHeight else { continue }
@@ -53,7 +54,7 @@ class TextRenderer: Renderer {
                 
                 let char = row[screenX]
                 if let tile = World.Tile(rawValue: char) {
-                    withColor(pair: ColorPair.color(for: tile)) {
+                    withColor(pair: ColorPair(for: tile)) {
                         putChar(y + offset.y, x + offset.x, char)
                     }
                 } else {
@@ -61,12 +62,14 @@ class TextRenderer: Renderer {
                 }
             }
         }
+        
+        // Render entities
         for entity in world.entities {
             guard world.inViewport(entity.position) else { continue }
             
             // i is row, j is column, but this is reverse of x, y
             let (j, i) = entity.position
-            withColor(pair: ColorPair.color(for: entity.tile), {
+            withColor(pair: ColorPair(for: entity.tile), {
                 putChar(i - world.origin.y + offset.y, j - world.origin.x + offset.x, entity.tile.rawValue)
             })
         }
@@ -100,16 +103,16 @@ extension TextRenderer {
         case crossTile
         case playerTile
         
-        static func color(for tile: World.Tile) -> ColorPair {
+        init(for tile: World.Tile) {
             switch tile {
             case .wallTile:
-                return .wallTile
+                self = .wallTile
             case .emptyTile:
-                return .emptyTile
+                self = .emptyTile
             case .crossTile:
-                return .crossTile
+                self = .crossTile
             case .playerUpTile, .playerDownTile, .playerLeftTile, .playerRightTile:
-                return .playerTile
+                self = .playerTile
             }
         }
     }

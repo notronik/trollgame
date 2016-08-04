@@ -11,45 +11,63 @@ import Foundation
 class PlayerInputComponent: EntityComponent {
     weak var entity: Entity!
     
-    enum Directions {
+    enum Direction {
+        case none
         case up, down, left, right
+        
+        init?(playerTile: World.Tile) {
+            switch playerTile {
+            case .playerUpTile:
+                self = .up
+            case .playerDownTile:
+                self = .down
+            case .playerLeftTile:
+                self = .left
+            case .playerRightTile:
+                self = .right
+            default:
+                return nil
+            }
+        }
     }
     
-    var movements = [Directions]()
+    var lastMovement: Direction = .none
     
     func update(world: World) {
-        // combine key events here.
-        guard movements.count > 0 else {
-            return
-        }
+        guard lastMovement != .none,
+            let currentDirection = Direction(playerTile: entity.tile) else { return }
         
         // should copy, as value type
         entity.newPosition = entity.position
-        for movement in movements {
-            switch movement {
-            case .up:
-                entity.newPosition!.1 -= 1
-                break
-            case .down:
-                entity.newPosition!.1 += 1
-            case .left:
-                entity.newPosition!.0 -= 1
-            case .right:
-                entity.newPosition!.0 += 1
-            }
-        }
-        // There must be a last direction as count > 0
-        switch movements.last! {
+        let shouldMove = currentDirection == lastMovement
+        
+        switch lastMovement {
         case .up:
+            if shouldMove {
+                entity.newPosition!.1 -= 1
+            }
             entity.tile = .playerUpTile
+            break
         case .down:
+            if shouldMove {
+                entity.newPosition!.1 += 1
+            }
             entity.tile = .playerDownTile
         case .left:
+            if shouldMove {
+                entity.newPosition!.0 -= 1
+            }
             entity.tile = .playerLeftTile
         case .right:
+            if shouldMove {
+                entity.newPosition!.0 += 1
+            }
             entity.tile = .playerRightTile
+        default:
+            break
         }
-        movements.removeAll()
+        
+        lastMovement = .none
     }
     
     func entityBecameAvailable() {
@@ -64,16 +82,16 @@ class PlayerInputComponent: EntityComponent {
         
         switch key {
         case .w:
-            movements.append(.up)
+            lastMovement = .up
             break
         case .a:
-            movements.append(.left)
+            lastMovement = .left
             break
         case .r:
-            movements.append(.down)
+            lastMovement = .down
             break
         case .s:
-            movements.append(.right)
+            lastMovement = .right
             break
         default:
             break
