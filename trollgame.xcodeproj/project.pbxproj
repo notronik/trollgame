@@ -39,20 +39,20 @@
 /* Begin PBXFileReference section */
 		240FC0C21D5257B300BED048 /* Trap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Trap.swift; path = util/Trap.swift; sourceTree = "<group>"; };
 		240FC0C51D528DFB00BED048 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Atomic.swift; path = util/Atomic.swift; sourceTree = "<group>"; };
-		240FC0C81D528F4100BED048 /* InputHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputHandler.swift; sourceTree = "<group>"; };
-		240FC0CA1D528F4B00BED048 /* TextInputHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextInputHandler.swift; sourceTree = "<group>"; };
+		240FC0C81D528F4100BED048 /* InputHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InputHandler.swift; path = input/InputHandler.swift; sourceTree = "<group>"; };
+		240FC0CA1D528F4B00BED048 /* TextInputHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextInputHandler.swift; path = input/TextInputHandler.swift; sourceTree = "<group>"; };
 		240FC0CD1D52963F00BED048 /* Boxes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Boxes.swift; path = util/Boxes.swift; sourceTree = "<group>"; };
-		247623F61D5354D000758E98 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
-		247623F91D53597400758E98 /* PlayerInputComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerInputComponent.swift; sourceTree = "<group>"; };
+		247623F61D5354D000758E98 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = entities/Entity.swift; sourceTree = "<group>"; };
+		247623F91D53597400758E98 /* PlayerInputComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlayerInputComponent.swift; path = entities/PlayerInputComponent.swift; sourceTree = "<group>"; };
 		247623FB1D53607D00758E98 /* Queue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Queue.swift; path = util/Queue.swift; sourceTree = "<group>"; };
-		247623FD1D53686E00758E98 /* EntityPhysicsComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityPhysicsComponent.swift; sourceTree = "<group>"; };
-		247623FF1D5384DC00758E98 /* FollowedByViewportComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowedByViewportComponent.swift; sourceTree = "<group>"; };
+		247623FD1D53686E00758E98 /* EntityPhysicsComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EntityPhysicsComponent.swift; path = entities/EntityPhysicsComponent.swift; sourceTree = "<group>"; };
+		247623FF1D5384DC00758E98 /* FollowedByViewportComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FollowedByViewportComponent.swift; path = entities/FollowedByViewportComponent.swift; sourceTree = "<group>"; };
 		24D803AA1D523C1300004826 /* trollgame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = trollgame; sourceTree = BUILT_PRODUCTS_DIR; };
 		24D803AD1D523C1300004826 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		24D803B41D52452000004826 /* Game.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
-		24D803B61D52453F00004826 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		24D803B61D52453F00004826 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Renderer.swift; path = renderers/Renderer.swift; sourceTree = "<group>"; };
 		24D803B81D52455600004826 /* World.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = World.swift; sourceTree = "<group>"; };
-		24D803BA1D52461700004826 /* TextRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextRenderer.swift; sourceTree = "<group>"; };
+		24D803BA1D52461700004826 /* TextRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextRenderer.swift; path = renderers/TextRenderer.swift; sourceTree = "<group>"; };
 		24D803BC1D5248CA00004826 /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; path = modules; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
