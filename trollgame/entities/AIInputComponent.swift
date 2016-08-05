@@ -14,14 +14,18 @@ class AIInputComponent: EntityComponent {
     var fixedGoal: Position?
     let usingFixedGoal: Bool
     
-    init(target: Entity) {
+    let impassable: [Tile]
+    
+    init(target: Entity, impassable: [Tile] = [.wallTile]) {
         self.target = target
         self.usingFixedGoal = false
+        self.impassable = impassable
     }
     
-    init(goal: Position) {
+    init(goal: Position, impassable: [Tile] = [.wallTile]) {
         self.fixedGoal = goal
         self.usingFixedGoal = true
+        self.impassable = impassable
     }
     
     func update(world: World) {
@@ -33,17 +37,42 @@ class AIInputComponent: EntityComponent {
                 entity.position != fixedGoal! else { return }
         }
         
-        let path = self.astarPath(world: world, start: self.entity.position, goal: usingFixedGoal ? fixedGoal! : target!.position)
-        if path.count > 0 {
-            entity.newPosition = path[1]
+        let path: [Position]
+        if usingFixedGoal {
+            path = self.astarPath(world: world,
+                                  start: self.entity.position,
+                                  goal: fixedGoal!)
         } else {
-            entity.newPosition = entity.position + Direction.random().deltaPosition
+            // The target position is either the new location if it exists and is passable or the old position otherwise
+            let targetPosition: Position
+            if let newPosition = target!.newPosition,
+                world.inWorld(newPosition) && !impassable.contains(world.tile(at: newPosition)) {
+                targetPosition = newPosition
+            } else {
+                targetPosition = target!.position
+            }
+            
+            path = self.astarPath(world: world,
+                                  start: self.entity.position,
+                                  goal: targetPosition)
         }
         
-        guard let newPosition = entity.newPosition, let newDirection = Direction(delta: newPosition - entity.position) else {
+        let potentialNewPosition: Position
+        if path.count > 0 {
+            potentialNewPosition = path[1]
+        } else {
+            potentialNewPosition = entity.position + Direction.random().deltaPosition
+        }
+        
+        guard let newDirection = Direction(delta: potentialNewPosition - entity.position) else {
             return
         }
-        entity.direction = newDirection
+        
+        if entity.direction == newDirection { // only move if facing in correct direction
+            entity.newPosition = potentialNewPosition
+        } else { // otherwise just turn
+            entity.direction = newDirection
+        }
     }
 }
 
@@ -67,8 +96,8 @@ extension AIInputComponent {
         func verifyAndAdd(_ direction: Direction) {
             let position = node + direction.deltaPosition
             
-            // position has to be in world and can't be a wall
-            guard world.inWorld(position) && world.tile(at: position) != .wallTile else { return }
+            // position has to be in world and can't be impassable
+            guard world.inWorld(position) && !impassable.contains(world.tile(at: position)) else { return }
             
             out.append(position)
         }

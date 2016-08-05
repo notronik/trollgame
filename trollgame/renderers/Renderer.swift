@@ -8,8 +8,27 @@
 
 import Foundation
 
+extension NSNotification.Name {
+    static let RendererDisplayMessage = NSNotification.Name(rawValue: "NVRendererDisplayMessage")
+    static let RendererHideMessage = NSNotification.Name(rawValue: "NVRendererHideMessage")
+}
+
 protocol Renderer {
     func render(world: World)
+}
+
+class RenderMessage: NSObject {
+    enum Kind {
+        case positive, negative
+    }
+    
+    let stringMessage: String
+    let type: Kind
+    
+    init(_ type: Kind, message: String) {
+        self.type = type
+        self.stringMessage = message
+    }
 }
 
 class StubRenderer: Renderer {

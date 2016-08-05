@@ -57,21 +57,24 @@ enum Direction: UInt32 {
 
 class Entity {
     enum NominatedPass {
-        case none
-        case input
-        case update
-        case physics
-        case preRender
-        case postRender
+        case attribute // these are never called, they only serve to react to notifications or provide data
+        case input // called to handle input
+        case update // called to update entity in some unrelated way
+        case physics // called to affect the entity's position and interact with the world
+        case preRender // called just before rendering, used for render setup
+        case postRender // called just after rendering, used for render cleanup or some other stuff
     }
     
-    var components = [NominatedPass: [EntityComponent]]()
+    private(set) var components = [NominatedPass: [EntityComponent]]()
     let notificationCenter = NotificationCenter()
     
     // Entity state // // // // // // /
     var position: Position
     var newPosition: Position? = nil
     var tile: TileProvider
+    var currentTile: Tile {
+        return tile.tile(for: direction)
+    }
     var direction: Direction
     // // // // // // // // // // // //
     

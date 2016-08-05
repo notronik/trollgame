@@ -40,9 +40,16 @@ func ==(lhs: Position, rhs: Position) -> Bool {
     return lhs.tuple == rhs.tuple
 }
 
+// MARK: Notification keys -
+extension NSNotification.Name {
+    static let TerminateGame = NSNotification.Name(rawValue: "NVTerminateGame")
+    static let TerminateGameAfterInput = NSNotification.Name(rawValue: "NVTerminateGameAfterInput")
+}
+
 // MARK: Game -
 class Game {
     var running = true
+    var terminateInput = false
     
     let renderer: Renderer
     let inputHandler: InputHandler
@@ -58,6 +65,8 @@ class Game {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(Game.keyPressed(_:)), name: .InputKeyPressed, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateNotification(_:)), name: .TerminateGame, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateAfterInputNotification(_:)), name: .TerminateGameAfterInput, object: nil)
         
         // Create player
         let player = Entity(position: world.randomPosition(.wallTile, .crossTile),
@@ -67,8 +76,8 @@ class Game {
                                 .left : .playerLeftTile,
                                 .right : .playerRightTile
                                 ]),
+                            (PlayerAttackableComponent(), .attribute),
                             (PlayerInputComponent(), .input),
-//                            (AIInputComponent(goal: Position(x: 2, y: 22)), .input), // AI component can even be the player
                             (MoveBlocksComponent(), .physics), // move blocks before position determined
                             (EntityPhysicsComponent(), .physics),
                             (FollowedByViewportComponent(), .preRender))
@@ -76,10 +85,18 @@ class Game {
         
         // Create trolls
         for _ in 0..<5 {
-            world.entities.append(Entity(position: world.randomPosition(.wallTile),
-                                         tile: SingleTile(.trollTile),
-                                         (AIInputComponent(target: player), .input),
-                                         (EntityPhysicsComponent(), .physics)))
+            let troll = Entity(position: world.randomPosition(.wallTile),
+                               tile: SingleTile(.trollTile),
+//                               tile: DirectionalTile([
+//                                .up : .testUpTile,
+//                                .down : .testDownTile,
+//                                .left : .testLeftTile,
+//                                .right : .testRightTile
+//                                ]),
+                               (AIInputComponent(target: player), .input),
+                               (EntityPhysicsComponent(), .physics),
+                               (AttackComponent(attackable: [player.tile]), .physics))
+            world.entities.append(troll)
         }
     }
     
@@ -87,8 +104,12 @@ class Game {
         print("Shutting down…")
     }
     
-    func terminate() {
-        running = false
+    func terminate(afterInput: Bool = false) {
+        if afterInput {
+            terminateInput = true
+        } else {
+            running = false
+        }
     }
     
     func run() {
@@ -97,7 +118,7 @@ class Game {
         world.update(.postRender)
         while running {
             inputHandler.handleInput()
-            if !running {
+            if !running || terminateInput {
                 break
             }
             
@@ -121,5 +142,13 @@ class Game {
         default:
             break
         }
+    }
+    
+    @objc func terminateNotification(_ notification: Notification) {
+        terminate()
+    }
+    
+    @objc func terminateAfterInputNotification(_ notification: Notification) {
+        terminate(afterInput: true)
     }
 }

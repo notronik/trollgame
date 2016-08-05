@@ -43,6 +43,12 @@ class World {
         return Tile(rawValue: matrix[position.y][position.x]) ?? .emptyTile
     }
     
+    func entity(at position: Position) -> Entity? {
+        return (entities.first { (entity) -> Bool in
+            entity.position == position
+        })
+    }
+    
     func inWorld(_ position: Position) -> Bool {
         return position.x >= 0 && position.x < lWidth && position.y >= 0 && position.y < lHeight
     }
@@ -84,10 +90,15 @@ enum Tile: UnicodeScalar {
     case playerLeftTile = "<"
     case playerRightTile = ">"
     case trollTile = "T"
+    case testLeftTile = "L"
+    case testRightTile = "R"
+    case testUpTile = "U"
+    case testDownTile = "D"
 }
 
 protocol TileProvider {
     func tile(for direction: Direction) -> Tile
+    var containedTiles: [Tile] { get }
 }
 
 struct SingleTile: TileProvider {
@@ -100,6 +111,10 @@ struct SingleTile: TileProvider {
     func tile(for direction: Direction) -> Tile {
         return self.tile
     }
+    
+    var containedTiles: [Tile] {
+        return [self.tile]
+    }
 }
 
 struct DirectionalTile: TileProvider {
@@ -111,5 +126,9 @@ struct DirectionalTile: TileProvider {
     
     func tile(for direction: Direction) -> Tile {
         return self.tiles[direction] ?? .crossTile
+    }
+    
+    var containedTiles: [Tile] {
+        return [tile(for: .up), tile(for: .down), tile(for: .left), tile(for: .right)]
     }
 }

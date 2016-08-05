@@ -9,7 +9,7 @@
 import Foundation
 
 class FollowedByViewportComponent: EntityComponent {
-    var entity: Entity!
+    weak var entity: Entity!
     
     func update(world: World) {
         let (x, y) = entity.position.tuple

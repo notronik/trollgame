@@ -11,7 +11,7 @@ import Foundation
 class EntityPhysicsComponent: EntityComponent {
     static let impassable: [Tile] = [.wallTile]
     
-    var entity: Entity!
+    weak var entity: Entity!
     
     func update(world: World) {
         // determine whether to progress

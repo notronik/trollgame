@@ -9,7 +9,7 @@
 import Foundation
 
 class MoveBlocksComponent: EntityComponent {
-    var entity: Entity!
+    weak var entity: Entity!
     
     func update(world: World) {
         guard let newPosition = entity.newPosition,
