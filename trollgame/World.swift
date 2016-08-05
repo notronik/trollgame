@@ -80,7 +80,7 @@ extension World {
     }
 }
 
-// MARK: Tile types
+// MARK: Tile types -
 enum Tile: UnicodeScalar {
     case wallTile = "#"
     case emptyTile = " "

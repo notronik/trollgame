@@ -18,9 +18,10 @@ class MoveBlocksComponent: EntityComponent {
         
         let sourcePosition = entity.position + entity.direction.deltaPosition
         let destinationPosition = sourcePosition + entity.direction.deltaPosition
-        // the source must be a wall tile, the destination must be an empty tile
+        // the source must be a wall tile, the destination must be an empty tile, no entity is at destination
         guard world.inWorld(sourcePosition) && world.tile(at: sourcePosition) == .wallTile,
-            world.inWorld(destinationPosition) && world.tile(at: destinationPosition) == .emptyTile else { return }
+            world.inWorld(destinationPosition) && world.tile(at: destinationPosition) == .emptyTile,
+            world.entity(at: destinationPosition) == nil else { return }
         
         // if the previous conditions are met, the block is 'pushed' by swapping the two tiles
         swap(&world.matrix[sourcePosition.y][sourcePosition.x], &world.matrix[destinationPosition.y][destinationPosition.x])

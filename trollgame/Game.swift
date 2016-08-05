@@ -70,31 +70,23 @@ class Game {
         
         // Create player
         let player = Entity(position: world.randomPosition(.wallTile, .crossTile),
-                            tile: DirectionalTile([
-                                .up : .playerUpTile,
-                                .down : .playerDownTile,
-                                .left : .playerLeftTile,
-                                .right : .playerRightTile
-                                ]),
+                            tile: StaticTileProviders.player,
                             (PlayerAttackableComponent(), .attribute),
                             (PlayerInputComponent(), .input),
                             (MoveBlocksComponent(), .physics), // move blocks before position determined
-                            (EntityPhysicsComponent(), .physics),
+                            // Allow the player to step on a troll (and die)
+                            (EntityPhysicsComponent(whitelist: [StaticTileProviders.troll]), .physics),
+                            (CompleteLevelComponent(), .physics),
                             (FollowedByViewportComponent(), .preRender))
         world.entities.append(player)
         
         // Create trolls
-        for _ in 0..<5 {
+        for _ in 0..<10 {
             let troll = Entity(position: world.randomPosition(.wallTile),
-                               tile: SingleTile(.trollTile),
-//                               tile: DirectionalTile([
-//                                .up : .testUpTile,
-//                                .down : .testDownTile,
-//                                .left : .testLeftTile,
-//                                .right : .testRightTile
-//                                ]),
-                               (AIInputComponent(target: player), .input),
-                               (EntityPhysicsComponent(), .physics),
+                               tile: StaticTileProviders.troll,
+                               (AIInputComponent(target: player, maxLength: 200), .input),
+                               // Allow a troll to step on a player and kill them
+                               (EntityPhysicsComponent(whitelist: [StaticTileProviders.player]), .physics),
                                (AttackComponent(attackable: [player.tile]), .physics))
             world.entities.append(troll)
         }

@@ -29,6 +29,14 @@ class RenderMessage: NSObject {
         self.type = type
         self.stringMessage = message
     }
+    
+    func send() {
+        NotificationCenter.default.post(name: .RendererDisplayMessage, object: self)
+    }
+    
+    static func clear() {
+        NotificationCenter.default.post(name: .RendererHideMessage, object: self)
+    }
 }
 
 class StubRenderer: Renderer {

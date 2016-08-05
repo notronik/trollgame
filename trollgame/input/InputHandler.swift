@@ -22,7 +22,7 @@ class StubInputHandler: InputHandler {
     }
     
     func handleInput() {
-        // stub
+        usleep(200000) // sleep for 200 milliseconds
     }
 }
 

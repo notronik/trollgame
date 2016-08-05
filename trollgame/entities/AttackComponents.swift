@@ -35,9 +35,7 @@ class AttackComponent: EntityComponent {
     let strength: Int
     
     init(attackable: [TileProvider], strength: Int = 1) {
-        self.attackable = Set<Tile>(attackable.map({ (provider) -> [Tile] in
-            provider.containedTiles
-        }).flatten())
+        self.attackable = flattenTileProviders(attackable)
         self.strength = strength
     }
     
@@ -76,12 +74,13 @@ class AttackableComponent: EntityComponent {
     }
 }
 
+/// Make this player entity attackable. The entity will obtain a health counter and listen to attack notifications.
 class PlayerAttackableComponent: AttackableComponent {
     override func handleAttack(by attacker: Entity, damage: Int) {
         self.health -= damage
         guard self.health <= 0 else { return }
         
-        NotificationCenter.default.post(name: .RendererDisplayMessage, object: RenderMessage(.negative, message: "You died."))
+        RenderMessage(.negative, message: "You died.").send()
         NotificationCenter.default.post(name: .TerminateGameAfterInput, object: nil)
     }
 }

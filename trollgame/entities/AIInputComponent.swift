@@ -14,18 +14,21 @@ class AIInputComponent: EntityComponent {
     var fixedGoal: Position?
     let usingFixedGoal: Bool
     
-    let impassable: [Tile]
+    let impassable: Set<Tile>
+    let maxLength: Int
     
-    init(target: Entity, impassable: [Tile] = [.wallTile]) {
+    init(target: Entity, impassable: [TileProvider] = [SingleTile(.wallTile)], maxLength: Int = 100) {
         self.target = target
         self.usingFixedGoal = false
-        self.impassable = impassable
+        self.impassable = flattenTileProviders(impassable)
+        self.maxLength = maxLength
     }
     
-    init(goal: Position, impassable: [Tile] = [.wallTile]) {
+    init(goal: Position, impassable: [TileProvider] = [SingleTile(.wallTile)], maxLength: Int = 100) {
         self.fixedGoal = goal
         self.usingFixedGoal = true
-        self.impassable = impassable
+        self.impassable = flattenTileProviders(impassable)
+        self.maxLength = maxLength
     }
     
     func update(world: World) {
@@ -58,7 +61,7 @@ class AIInputComponent: EntityComponent {
         }
         
         let potentialNewPosition: Position
-        if path.count > 0 {
+        if path.count > 1 { // verify that there is more than one element
             potentialNewPosition = path[1]
         } else {
             potentialNewPosition = entity.position + Direction.random().deltaPosition
@@ -143,6 +146,10 @@ extension AIInputComponent {
                     frontier.push(ANode(position: next, cost: priority))
                     cameFrom[next] = current.position
                 }
+            }
+            
+            if cameFrom.count >= maxLength {
+                break
             }
         }
         

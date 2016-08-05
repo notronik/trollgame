@@ -55,13 +55,22 @@ enum Direction: UInt32 {
     }
 }
 
+// MARK: Entity -
+/* 
+ An Entity is a collection of EntityComponents and associated information.
+ 
+ Components are added in 'nominated passes'. These are consecutive places in the game loop
+ that run the update method on the component. They are roughly categorised and modify mostly
+ their own information. There is also the `attribute` pass, which is never called from the main
+ loop and is for data storage and manipulation operations using the notification centre.
+ */
 class Entity {
     enum NominatedPass {
-        case attribute // these are never called, they only serve to react to notifications or provide data
-        case input // called to handle input
-        case update // called to update entity in some unrelated way
-        case physics // called to affect the entity's position and interact with the world
-        case preRender // called just before rendering, used for render setup
+        case attribute  // these are never called, they only serve to react to notifications or provide data
+        case input      // called to handle input
+        case update     // called to update entity in some unrelated way
+        case physics    // called to affect the entity's position and interact with the world
+        case preRender  // called just before rendering, used for render setup
         case postRender // called just after rendering, used for render cleanup or some other stuff
     }
     
@@ -104,4 +113,15 @@ class Entity {
             component.update(world: world)
         }
     }
+}
+
+// MARK: Static tile providers (pre-made tile providers for certain entity configurations) -
+struct StaticTileProviders {
+    static let player = DirectionalTile([
+        .up : .playerUpTile,
+        .down : .playerDownTile,
+        .left : .playerLeftTile,
+        .right : .playerRightTile
+        ])
+    static let troll = SingleTile(.trollTile)
 }
