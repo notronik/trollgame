@@ -13,7 +13,7 @@ class CompleteLevelComponent: EntityComponent {
     
     let completes: [Tile]
     
-    init(completes: [Tile] = [.crossTile]) {
+    init(completes: [Tile] = [.goalTile]) {
         self.completes = completes
     }
     

@@ -58,18 +58,15 @@ class Game {
     init(renderer: Renderer, inputHandler: InputHandler) {
         self.renderer = renderer
         self.inputHandler = inputHandler
-        do {
-            self.world = try World(width: 40, height: 20, file: URL(fileURLWithPath: "/Users/nik/git/trollgame/level.txt")) // obvs change level dir
-        } catch {
-            fatalError("Cannot load world")
-        }
+        // Generate a maze
+        self.world = World(width: 40, height: 20, mazeWidth: 101, mazeHeight: 51)
         
         NotificationCenter.default.addObserver(self, selector: #selector(Game.keyPressed(_:)), name: .InputKeyPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateNotification(_:)), name: .TerminateGame, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateAfterInputNotification(_:)), name: .TerminateGameAfterInput, object: nil)
         
         // Create player
-        let player = Entity(position: world.randomPosition(.wallTile, .crossTile),
+        let player = Entity(position: world.randomPosition(.wallTile, .goalTile),
                             tile: StaticTileProviders.player,
                             (PlayerAttackableComponent(), .attribute),
                             (PlayerInputComponent(), .input),

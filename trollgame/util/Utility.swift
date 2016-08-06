@@ -13,3 +13,9 @@ func flattenTileProviders(_ providers: [TileProvider]) -> Set<Tile> {
         provider.containedTiles
     }).flatten())
 }
+
+extension Array {
+    func random() -> Element {
+        return self[Int(arc4random_uniform(UInt32(self.count)))]
+    }
+}

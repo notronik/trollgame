@@ -18,6 +18,7 @@ class World {
     // Level
     var lWidth, lHeight: Int
     
+    /// Create a World with a specific viewport size from a level string
     init(width: Int, height: Int, string: String) {
         self.vWidth = width
         self.vHeight = height
@@ -35,8 +36,145 @@ class World {
         }
     }
     
+    /// Create a World with a specific viewport size from a level file
     convenience init(width: Int, height: Int, file: URL) throws {
         self.init(width: width, height: height, string: try String(contentsOf: file, encoding: .utf8))
+    }
+    
+    /// Create a World with a specific viewport size by generating a maze
+    init(width: Int, height: Int, mazeWidth: Int, mazeHeight: Int, xCellSize: Int = 3, yCellSize: Int = 1, wallSize: Int = 1) {
+        assert(mazeWidth % 2 == 1, "Maze width must be odd")
+        assert(mazeHeight % 2 == 1, "Maze height must be odd")
+        assert(xCellSize % 2 == 1, "Horizontal cell size must be odd")
+        assert(yCellSize % 2 == 1, "Vertical cell size must be odd")
+        
+        self.vWidth = width
+        self.vHeight = height
+        self.lWidth = mazeWidth
+        self.lHeight = mazeHeight
+        
+        // *** *** *** *** *** ***
+        
+        let xCellNum = mazeWidth / (xCellSize + wallSize)
+        let yCellNum = mazeHeight / (yCellSize + wallSize)
+        let numberCells = xCellNum * yCellNum
+        
+        func transformToMatrix(cell position: Position) -> Position {
+            return Position(x: (xCellSize + wallSize) / 2 + (xCellSize + wallSize) * position.x,
+                            y: (yCellSize + wallSize) / 2 + (yCellSize + wallSize) * position.y)
+        }
+        
+        var visited = [Position]() // in cell coordinates
+        // Generate the maze from a random cell
+        var current = Position(x: Int(arc4random_uniform(UInt32(xCellNum))), y: Int(arc4random_uniform(UInt32(yCellNum))))
+        var backtrackStack = Stack<Position>()
+        
+        /// Get the neigbor of a specific position
+        func neighbor(_ position: Position, _ direction: Direction) -> Position {
+            return position + direction.deltaPosition
+        }
+        
+        /// Obtain the unvisited neighbours of the cell or nil if no neighbours are unvisited
+        func unvisitedNeighbors(_ position: Position)  -> [Position]? {
+            var neighbors = [Position]()
+            
+            for direction in Direction.cases {
+                let nbr = neighbor(position, direction)
+                // Ensure that neighbour is unvisited and in level
+                guard !visited.contains(nbr),
+                    nbr.x >= 0 && nbr.x < xCellNum,
+                    nbr.y >= 0 && nbr.y < yCellNum else {
+                        continue
+                }
+                neighbors.append(nbr)
+            }
+            
+            return neighbors.isEmpty ? nil : neighbors
+        }
+        
+        // Initialise the level matrix
+        self.matrix = Array<[UnicodeScalar]>(repeating: Array<UnicodeScalar>(repeating: "#", count: mazeWidth), count: mazeHeight)
+        for j in 0..<yCellNum {
+            for i in 0..<xCellNum {
+                let cellPos = transformToMatrix(cell: Position(x: i, y: j))
+                
+                // Clear area of cell
+                for sy in -(yCellSize/2)...(yCellSize/2) {
+                    for sx in -(xCellSize/2)...(xCellSize/2) {
+                        matrix[cellPos.y + sy][cellPos.x + sx] = Tile.emptyTile.rawValue
+                    }
+                }
+            }
+        }
+        
+        /// Carve a path between two cell locations
+        func carvePath(from: Position, to: Position) {
+            guard let direction = Direction(delta: to - from) else { return }
+            
+            let tFrom = transformToMatrix(cell: from)
+            let tTo = transformToMatrix(cell: to)
+            
+            switch direction {
+            case .up, .down:
+                let middle = Position(x: tFrom.x, y: (tTo.y + tFrom.y) / 2)
+                for sy in -(wallSize / 2)...(wallSize / 2) {
+                    for sx in -(xCellSize / 2)...(xCellSize / 2) {
+                        matrix[middle.y + sy][middle.x + sx] = " "
+                    }
+                }
+            case .left, .right:
+                let middle = Position(x: (tTo.x + tFrom.x) / 2, y: tFrom.y)
+                for sy in -(yCellSize / 2)...(yCellSize / 2) {
+                    for sx in -(wallSize / 2)...(wallSize / 2) {
+                        matrix[middle.y + sy][middle.x + sx] = " "
+                    }
+                }
+            }
+        }
+        
+        // Generation loop
+        while visited.count < numberCells {
+            if let neighbors = unvisitedNeighbors(current) {
+                // Choose a random unvisited neighbour
+                let neighbor = neighbors.random()
+                
+                // Push the current cell to the stack
+                backtrackStack.push(item: current)
+                
+                // Remove the wall between the current and chosen cell
+                carvePath(from: current, to: neighbor)
+                
+                // Make the chosen cell the current cell
+                current = neighbor
+                // Mark as visited
+                visited.append(current)
+            } else if !backtrackStack.isEmpty {
+                // Backtrack by making previous cell current cell
+                current = backtrackStack.pop()
+            }
+        }
+        
+        // Place the exit
+        let edge = Direction.random() // udlr analogous to tblr
+        
+        let exitCell: Position
+        let neighborCell: Position
+        let exitPosition: Position
+        switch edge {
+        case .up, .down:
+            exitCell = Position(x: Int(arc4random_uniform(UInt32(xCellNum))), y: edge == .up ? 0 : yCellNum - 1)
+            neighborCell = neighbor(exitCell, edge)
+            exitPosition = Position(x: transformToMatrix(cell: exitCell).x,
+                                    y: (transformToMatrix(cell: exitCell).y + transformToMatrix(cell: neighborCell).y) / 2)
+        case .left, .right:
+            exitCell = Position(x: edge == .left ? 0 : xCellNum - 1, y: Int(arc4random_uniform(UInt32(yCellNum))))
+            neighborCell = neighbor(exitCell, edge)
+            exitPosition = Position(x: (transformToMatrix(cell: exitCell).x + transformToMatrix(cell: neighborCell).x) / 2,
+                                    y: transformToMatrix(cell: exitCell).y)
+        }
+        
+        carvePath(from: exitCell, to: neighbor(exitCell, edge))
+        matrix[exitPosition.y][exitPosition.x] = Tile.goalTile.rawValue
     }
     
     func tile(at position: Position) -> Tile {
@@ -84,7 +222,7 @@ extension World {
 enum Tile: UnicodeScalar {
     case wallTile = "#"
     case emptyTile = " "
-    case crossTile = "X"
+    case goalTile = "X"
     case playerUpTile = "^"
     case playerDownTile = "v"
     case playerLeftTile = "<"
@@ -125,7 +263,7 @@ struct DirectionalTile: TileProvider {
     }
     
     func tile(for direction: Direction) -> Tile {
-        return self.tiles[direction] ?? .crossTile
+        return self.tiles[direction] ?? .goalTile
     }
     
     var containedTiles: [Tile] {

@@ -24,6 +24,7 @@
 		24D803BB1D52461700004826 /* TextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D803BA1D52461700004826 /* TextRenderer.swift */; };
 		24ED03531D54E8820035BC14 /* CompleteLevelComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ED03521D54E8820035BC14 /* CompleteLevelComponent.swift */; };
 		24ED03551D5500D10035BC14 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ED03541D5500D10035BC14 /* Utility.swift */; };
+		24ED03571D5527340035BC14 /* Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ED03561D5527340035BC14 /* Stack.swift */; };
 		24FD89A81D54AA7A009F3E09 /* AIInputComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FD89A71D54AA7A009F3E09 /* AIInputComponent.swift */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,7 @@
 		24D803BC1D5248CA00004826 /* modules */ = {isa = PBXFileReference; lastKnownFileType = folder; path = modules; sourceTree = "<group>"; };
 		24ED03521D54E8820035BC14 /* CompleteLevelComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CompleteLevelComponent.swift; path = entities/CompleteLevelComponent.swift; sourceTree = "<group>"; };
 		24ED03541D5500D10035BC14 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Utility.swift; path = util/Utility.swift; sourceTree = "<group>"; };
+		24ED03561D5527340035BC14 /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Stack.swift; path = util/Stack.swift; sourceTree = "<group>"; };
 		24FD89A71D54AA7A009F3E09 /* AIInputComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AIInputComponent.swift; path = entities/AIInputComponent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -79,6 +81,7 @@
 				24ED03541D5500D10035BC14 /* Utility.swift */,
 				240FC0C21D5257B300BED048 /* Trap.swift */,
 				242A72331D53C54E00B9932F /* PriorityQueue.swift */,
+				24ED03561D5527340035BC14 /* Stack.swift */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				24D803B51D52452000004826 /* Game.swift in Sources */,
 				24C588C41D54B70800A381F1 /* AttackComponents.swift in Sources */,
 				24FD89A81D54AA7A009F3E09 /* AIInputComponent.swift in Sources */,
+				24ED03571D5527340035BC14 /* Stack.swift in Sources */,
 				240FC0CB1D528F4B00BED048 /* TextInputHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

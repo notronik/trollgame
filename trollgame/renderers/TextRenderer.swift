@@ -36,7 +36,7 @@ class TextRenderer: Renderer {
         createColorPair(.messageNegative, fg: COLOR_WHITE, bg: COLOR_RED)
         createColorPair(.wallTile, fg: COLOR_GREEN, bg: COLOR_BLACK)
         createColorPair(.emptyTile, fg: -1, bg: COLOR_BLACK)
-        createColorPair(.crossTile, fg: COLOR_MAGENTA, bg: COLOR_BLACK)
+        createColorPair(.goalTile, fg: COLOR_MAGENTA, bg: COLOR_BLACK)
         createColorPair(.playerTile, fg: COLOR_CYAN, bg: COLOR_BLACK)
         createColorPair(.trollTile, fg: COLOR_RED, bg: COLOR_BLACK)
         
@@ -133,7 +133,7 @@ extension TextRenderer {
         case messageNegative
         case wallTile
         case emptyTile
-        case crossTile
+        case goalTile
         case playerTile
         case trollTile
         
@@ -143,8 +143,8 @@ extension TextRenderer {
                 self = .wallTile
             case .emptyTile:
                 self = .emptyTile
-            case .crossTile:
-                self = .crossTile
+            case .goalTile:
+                self = .goalTile
             case .playerUpTile, .playerDownTile, .playerLeftTile, .playerRightTile:
                 self = .playerTile
             case .trollTile:

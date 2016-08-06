@@ -22,6 +22,8 @@ extension EntityComponent {
 enum Direction: UInt32 {
     case up = 0, down, left, right
     
+    static let cases: [Direction] = [.up, .down, .left, .right]
+    
     init?(delta: Position) {
         switch delta.tuple {
         case (0, -1):
@@ -51,7 +53,7 @@ enum Direction: UInt32 {
     }
     
     static func random() -> Direction {
-        return Direction(rawValue: arc4random_uniform(4))!
+        return Direction(rawValue: arc4random_uniform(UInt32(Direction.cases.count)))!
     }
 }
 
