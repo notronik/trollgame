@@ -8,6 +8,7 @@
 
 import Foundation
 import ncurses
+import AppKit.NSColor
 
 class TextRenderer: Renderer {
     let offset: Position
@@ -28,17 +29,27 @@ class TextRenderer: Renderer {
         initscr()
         curs_set(0)
         start_color()
-        use_default_colors()
         _ = noecho()
         
+        // Create colors
+        createColor(named: .black, #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
+        createColor(named: .yellow, #colorLiteral(red: 1, green: 0.8901960784, blue: 0, alpha: 1))
+        createColor(named: .magenta, #colorLiteral(red: 1, green: 0, blue: 1, alpha: 1))
+        createColor(named: .white, #colorLiteral(red: 1, green: 0.99997437, blue: 0.9999912977, alpha: 1))
+        createColor(named: .gray, #colorLiteral(red: 0.7602152824, green: 0.7601925135, blue: 0.7602053881, alpha: 1))
+        createColor(named: .darkGray, #colorLiteral(red: 0.4266758859, green: 0.4266631007, blue: 0.4266703427, alpha: 1))
+        createColor(named: .darkGreen, #colorLiteral(red: 0.2193539292, green: 0.7904680172, blue: 0.5820855035, alpha: 1))
+        createColor(named: .positive, #colorLiteral(red: 0.4028071761, green: 0.7315050364, blue: 0.2071235478, alpha: 1))
+        createColor(named: .negative, #colorLiteral(red: 0.9101451635, green: 0.2575159371, blue: 0.1483209133, alpha: 1))
+        
         // Set colors
-        createColorPair(.messagePositive, fg: COLOR_WHITE, bg: COLOR_GREEN)
-        createColorPair(.messageNegative, fg: COLOR_WHITE, bg: COLOR_RED)
-        createColorPair(.wallTile, fg: COLOR_GREEN, bg: COLOR_BLACK)
-        createColorPair(.emptyTile, fg: -1, bg: COLOR_BLACK)
-        createColorPair(.goalTile, fg: COLOR_MAGENTA, bg: COLOR_BLACK)
-        createColorPair(.playerTile, fg: COLOR_CYAN, bg: COLOR_BLACK)
-        createColorPair(.trollTile, fg: COLOR_RED, bg: COLOR_BLACK)
+        createColorPair(.messagePositive, fg: .white, bg: .positive)
+        createColorPair(.messageNegative, fg: .white, bg: .negative)
+        createColorPair(.wallTile, fg: .gray, bg: .darkGray)
+        createColorPair(.emptyTile, fg: .black, bg: .black)
+        createColorPair(.goalTile, fg: .magenta, bg: .black)
+        createColorPair(.playerTile, fg: .yellow, bg: .black)
+        createColorPair(.trollTile, fg: .darkGreen, bg: .black)
         
         NotificationCenter.default.addObserver(self, selector: #selector(TextRenderer.displayMessage(_:)), name: .RendererDisplayMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(TextRenderer.hideMessage(_:)), name: .RendererHideMessage, object: nil)
@@ -83,6 +94,7 @@ class TextRenderer: Renderer {
             })
         }
         
+        // Render message if there is one
         if let message = message {
             let color: ColorPair
             switch message.type {
@@ -110,8 +122,16 @@ class TextRenderer: Renderer {
 
 // MARK: Utility functions -
 extension TextRenderer {
-    func createColorPair(_ pair: ColorPair, fg: Int32, bg: Int32) {
-        init_pair(pair.rawValue, Int16(fg), Int16(bg))
+    func createColor(named identifier: Color, _ color: NSColor) {
+        let red = Int16(color.redComponent * 1000)
+        let green = Int16(color.greenComponent * 1000)
+        let blue = Int16(color.blueComponent * 1000)
+        
+        init_color(identifier.rawValue, red, green, blue)
+    }
+    
+    func createColorPair(_ pair: ColorPair, fg: Color, bg: Color) {
+        init_pair(pair.rawValue, fg.rawValue, bg.rawValue)
     }
     
     func withColor(pair: ColorPair, _ block: @noescape () -> Void) {
@@ -128,6 +148,18 @@ extension TextRenderer {
 
 // MARK: Utility constants -
 extension TextRenderer {
+    enum Color: Int16 {
+        case black = 8
+        case yellow
+        case magenta
+        case white
+        case gray
+        case darkGray
+        case darkGreen
+        case positive
+        case negative
+    }
+    
     enum ColorPair: Int16 {
         case messagePositive = 1
         case messageNegative
