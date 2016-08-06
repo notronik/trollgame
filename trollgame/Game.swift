@@ -87,7 +87,7 @@ class Game {
                                (TileAttackComponent(attackedBy: [SingleTile(.wallTile)]), .physics),
                                // Allow a troll to step on a player and kill them
                                (EntityPhysicsComponent(whitelist: [StaticTileProviders.player]), .physics),
-                               (AttackComponent(attackable: [player.tile]), .physics))
+                               (AttackComponent(attackable: [player.tile]), .attack))
             world.add(entity: troll)
         }
     }
@@ -116,6 +116,7 @@ class Game {
             
             world.update(.input)
             world.update(.physics)
+            world.update(.attack)
             world.update(.preRender)
             renderer.render(world: world)
             world.update(.postRender)

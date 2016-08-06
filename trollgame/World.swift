@@ -236,7 +236,8 @@ class World {
 // MARK: World updates -
 extension World {
     func update(_ pass: Entity.NominatedPass) {
-        for (_, entity) in entities {
+        var iterator = entities.makeIterator()
+        while let (_, entity) = iterator.next() {
             entity.update(pass, world: self)
         }
     }

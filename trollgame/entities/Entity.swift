@@ -72,6 +72,7 @@ class Entity {
         case input      // called to handle input
         case update     // called to update entity in some unrelated way
         case physics    // called to affect the entity's position and interact with the world
+        case attack     // called to process attacks
         case preRender  // called just before rendering, used for render setup
         case postRender // called just after rendering, used for render cleanup or some other stuff
     }
