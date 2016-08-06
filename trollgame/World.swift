@@ -93,7 +93,7 @@ class World {
         }
         
         // Initialise the level matrix
-        self.matrix = Array<[UnicodeScalar]>(repeating: Array<UnicodeScalar>(repeating: "#", count: mazeWidth), count: mazeHeight)
+        self.matrix = Array<[UnicodeScalar]>(repeating: Array<UnicodeScalar>(repeating: Tile.wallTile.rawValue, count: mazeWidth), count: mazeHeight)
         for j in 0..<yCellNum {
             for i in 0..<xCellNum {
                 let cellPos = transformToMatrix(cell: Position(x: i, y: j))
@@ -119,14 +119,14 @@ class World {
                 let middle = Position(x: tFrom.x, y: (tTo.y + tFrom.y) / 2)
                 for sy in -(wallSize / 2)...(wallSize / 2) {
                     for sx in -(xCellSize / 2)...(xCellSize / 2) {
-                        matrix[middle.y + sy][middle.x + sx] = " "
+                        matrix[middle.y + sy][middle.x + sx] = Tile.emptyTile.rawValue
                     }
                 }
             case .left, .right:
                 let middle = Position(x: (tTo.x + tFrom.x) / 2, y: tFrom.y)
                 for sy in -(yCellSize / 2)...(yCellSize / 2) {
                     for sx in -(wallSize / 2)...(wallSize / 2) {
-                        matrix[middle.y + sy][middle.x + sx] = " "
+                        matrix[middle.y + sy][middle.x + sx] = Tile.emptyTile.rawValue
                     }
                 }
             }
