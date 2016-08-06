@@ -81,7 +81,6 @@ class AIInputComponent: EntityComponent {
 
 // MARK: A* -
 // Based on this http://www.redblobgames.com/pathfinding/a-star/implementation.html
-// TODO: Maybe quit early if path gets too long
 extension AIInputComponent {
     struct ANode: Comparable {
         var cost: Double
