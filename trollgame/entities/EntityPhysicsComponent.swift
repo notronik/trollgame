@@ -26,9 +26,11 @@ class EntityPhysicsComponent: EntityComponent {
         }
         
         // entity cannot pass over other entities unless those are whitelisted
-        if let potentialEntity = world.entity(at: newPosition) {
-            if !whitelist.contains(potentialEntity.currentTile) {
-                return
+        if let potentialEntities = world.entities(at: newPosition) {
+            for potentialEntity in potentialEntities {
+                if !whitelist.contains(potentialEntity.currentTile) {
+                    return
+                }
             }
         }
         

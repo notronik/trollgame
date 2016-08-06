@@ -32,20 +32,22 @@ class TextRenderer: Renderer {
         _ = noecho()
         
         // Create colors
-        createColor(named: .black, #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
-        createColor(named: .yellow, #colorLiteral(red: 1, green: 0.8901960784, blue: 0, alpha: 1))
-        createColor(named: .magenta, #colorLiteral(red: 1, green: 0, blue: 1, alpha: 1))
-        createColor(named: .white, #colorLiteral(red: 1, green: 0.99997437, blue: 0.9999912977, alpha: 1))
-        createColor(named: .gray, #colorLiteral(red: 0.7602152824, green: 0.7601925135, blue: 0.7602053881, alpha: 1))
-        createColor(named: .darkGray, #colorLiteral(red: 0.4266758859, green: 0.4266631007, blue: 0.4266703427, alpha: 1))
-        createColor(named: .darkGreen, #colorLiteral(red: 0.2193539292, green: 0.7904680172, blue: 0.5820855035, alpha: 1))
-        createColor(named: .positive, #colorLiteral(red: 0.4028071761, green: 0.7315050364, blue: 0.2071235478, alpha: 1))
-        createColor(named: .negative, #colorLiteral(red: 0.9101451635, green: 0.2575159371, blue: 0.1483209133, alpha: 1))
+        createColor(named: .black,      #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1))
+        createColor(named: .yellow,     #colorLiteral(red: 1, green: 0.8901960784, blue: 0, alpha: 1))
+        createColor(named: .magenta,    #colorLiteral(red: 1, green: 0, blue: 1, alpha: 1))
+        createColor(named: .white,      #colorLiteral(red: 1, green: 0.99997437, blue: 0.9999912977, alpha: 1))
+        createColor(named: .gray,       #colorLiteral(red: 0.7602152824, green: 0.7601925135, blue: 0.7602053881, alpha: 1))
+        createColor(named: .darkGray,   #colorLiteral(red: 0.4266758859, green: 0.4266631007, blue: 0.4266703427, alpha: 1))
+        createColor(named: .darkGreen,  #colorLiteral(red: 0.2193539292, green: 0.7904680172, blue: 0.5820855035, alpha: 1))
+        createColor(named: .lightRed,   #colorLiteral(red: 0.8949507475, green: 0.5508074871, blue: 0.5237553709, alpha: 1))
+        createColor(named: .positive,   #colorLiteral(red: 0.4028071761, green: 0.7315050364, blue: 0.2071235478, alpha: 1))
+        createColor(named: .negative,   #colorLiteral(red: 0.9101451635, green: 0.2575159371, blue: 0.1483209133, alpha: 1))
         
         // Set colors
         createColorPair(.messagePositive, fg: .white, bg: .positive)
         createColorPair(.messageNegative, fg: .white, bg: .negative)
         createColorPair(.wallTile, fg: .gray, bg: .darkGray)
+        createColorPair(.bloodiedWallTile, fg: .lightRed, bg: .darkGray)
         createColorPair(.emptyTile, fg: .black, bg: .black)
         createColorPair(.goalTile, fg: .magenta, bg: .black)
         createColorPair(.playerTile, fg: .yellow, bg: .black)
@@ -72,8 +74,20 @@ class TextRenderer: Renderer {
                 guard screenX >= 0 && screenX < world.lWidth else { continue }
                 
                 let char = row[screenX]
-                if let tile = Tile(rawValue: char) {
-                    withColor(pair: ColorPair(for: tile)) {
+                if let tile = Tile(value: char) {
+                    let pair: ColorPair
+                    if !Tile.isAttributed(char) {
+                        pair = ColorPair(for: tile)
+                    } else {
+                        switch tile {
+                        case .wallTile:
+                            pair = .bloodiedWallTile
+                        default:
+                            pair = ColorPair(for: tile)
+                        }
+                    }
+                    
+                    withColor(pair: pair) {
                         putChar(y + offset.y, x + offset.x, char)
                     }
                 } else {
@@ -83,14 +97,14 @@ class TextRenderer: Renderer {
         }
         
         // Render entities
-        for entity in world.entities {
+        for entity in world.entities.values {
             guard world.inViewport(entity.position) else { continue }
             
             // i is row, j is column, but this is reverse of x, y
             let (j, i) = entity.position.tuple
             let tile = entity.currentTile
             withColor(pair: ColorPair(for: tile), {
-                putChar(i - world.origin.y + offset.y, j - world.origin.x + offset.x, tile.rawValue)
+                putChar(i - world.origin.y + offset.y, j - world.origin.x + offset.x, tile.value)
             })
         }
         
@@ -141,8 +155,8 @@ extension TextRenderer {
         use_default_colors()
     }
     
-    func putChar(_ row: Int, _ col: Int, _ char: UnicodeScalar) {
-        mvaddch(Int32(row), Int32(col), char.value)
+    func putChar(_ row: Int, _ col: Int, _ char: UInt32) {
+        mvaddch(Int32(row), Int32(col), char)
     }
 }
 
@@ -156,6 +170,7 @@ extension TextRenderer {
         case gray
         case darkGray
         case darkGreen
+        case lightRed
         case positive
         case negative
     }
@@ -164,6 +179,7 @@ extension TextRenderer {
         case messagePositive = 1
         case messageNegative
         case wallTile
+        case bloodiedWallTile
         case emptyTile
         case goalTile
         case playerTile
@@ -180,8 +196,6 @@ extension TextRenderer {
             case .playerUpTile, .playerDownTile, .playerLeftTile, .playerRightTile:
                 self = .playerTile
             case .trollTile:
-                self = .trollTile
-            case .testUpTile, .testDownTile, .testLeftTile, .testRightTile:
                 self = .trollTile
             }
         }

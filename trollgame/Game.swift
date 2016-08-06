@@ -70,22 +70,25 @@ class Game {
                             tile: StaticTileProviders.player,
                             (PlayerAttackableComponent(), .attribute),
                             (PlayerInputComponent(), .input),
-                            (MoveBlocksComponent(), .physics), // move blocks before position determined
+                            (MoveBlocksComponent(whitelist: [StaticTileProviders.troll]), .physics), // move blocks before position determined
                             // Allow the player to step on a troll (and die)
                             (EntityPhysicsComponent(whitelist: [StaticTileProviders.troll]), .physics),
                             (CompleteLevelComponent(), .physics),
                             (FollowedByViewportComponent(), .preRender))
-        world.entities.append(player)
+        world.add(entity: player)
         
         // Create trolls
         for _ in 0..<10 {
             let troll = Entity(position: world.randomPosition(.wallTile),
                                tile: StaticTileProviders.troll,
+                               (TrollAttackableComponent(), .attribute),
                                (AIInputComponent(target: player, maxLength: 200), .input),
+                               // Allow trolls to be killed by wall tiles
+                               (TileAttackComponent(attackedBy: [SingleTile(.wallTile)]), .physics),
                                // Allow a troll to step on a player and kill them
                                (EntityPhysicsComponent(whitelist: [StaticTileProviders.player]), .physics),
                                (AttackComponent(attackable: [player.tile]), .physics))
-            world.entities.append(troll)
+            world.add(entity: troll)
         }
     }
     

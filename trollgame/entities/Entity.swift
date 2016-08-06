@@ -78,6 +78,7 @@ class Entity {
     
     private(set) var components = [NominatedPass: [EntityComponent]]()
     let notificationCenter = NotificationCenter()
+    let id = UUID()
     
     // Entity state // // // // // // /
     var position: Position
@@ -86,7 +87,16 @@ class Entity {
     var currentTile: Tile {
         return tile.tile(for: direction)
     }
+    /// The newest position, even if it is non-final
+    var latestPosition: Position {
+        guard let new = newPosition else {
+            return position
+        }
+        
+        return new
+    }
     var direction: Direction
+    weak var world: World!
     // // // // // // // // // // // //
     
     init(position: Position, tile: TileProvider, direction: Direction = .down, components: [(EntityComponent, NominatedPass)]) {
@@ -115,6 +125,17 @@ class Entity {
             component.update(world: world)
         }
     }
+    
+    func removeFromWorld() {
+        self.world.removeEntity(id: id)
+    }
+}
+
+// MARK: Entity Equatable conformance
+extension Entity : Equatable { }
+
+func ==(lhs: Entity, rhs: Entity) -> Bool {
+    return lhs.id.uuidString == rhs.id.uuidString // the raw data didn't want to compare
 }
 
 // MARK: Static tile providers (pre-made tile providers for certain entity configurations) -

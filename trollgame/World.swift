@@ -9,8 +9,8 @@
 import Foundation
 
 class World {
-    var matrix = [[UnicodeScalar]]()
-    var entities = [Entity]()
+    var matrix = [[UInt32]]()
+    var entities = [UUID: Entity]()
     
     // Viewport
     let vWidth, vHeight: Int
@@ -27,7 +27,7 @@ class World {
         self.lWidth = -1
         self.lHeight = components.count
         for row in components {
-            let rowArray = Array(row.unicodeScalars)
+            let rowArray = Array(row.unicodeScalars.map { $0.value })
             if lWidth < 0 {
                 self.lWidth = rowArray.count
             }
@@ -93,7 +93,7 @@ class World {
         }
         
         // Initialise the level matrix
-        self.matrix = Array<[UnicodeScalar]>(repeating: Array<UnicodeScalar>(repeating: Tile.wallTile.rawValue, count: mazeWidth), count: mazeHeight)
+        self.matrix = Array<[UInt32]>(repeating: Array<UInt32>(repeating: Tile.wallTile.value, count: mazeWidth), count: mazeHeight)
         for j in 0..<yCellNum {
             for i in 0..<xCellNum {
                 let cellPos = transformToMatrix(cell: Position(x: i, y: j))
@@ -101,7 +101,7 @@ class World {
                 // Clear area of cell
                 for sy in -(yCellSize/2)...(yCellSize/2) {
                     for sx in -(xCellSize/2)...(xCellSize/2) {
-                        matrix[cellPos.y + sy][cellPos.x + sx] = Tile.emptyTile.rawValue
+                        matrix[cellPos.y + sy][cellPos.x + sx] = Tile.emptyTile.value
                     }
                 }
             }
@@ -119,14 +119,14 @@ class World {
                 let middle = Position(x: tFrom.x, y: (tTo.y + tFrom.y) / 2)
                 for sy in -(wallSize / 2)...(wallSize / 2) {
                     for sx in -(xCellSize / 2)...(xCellSize / 2) {
-                        matrix[middle.y + sy][middle.x + sx] = Tile.emptyTile.rawValue
+                        matrix[middle.y + sy][middle.x + sx] = Tile.emptyTile.value
                     }
                 }
             case .left, .right:
                 let middle = Position(x: (tTo.x + tFrom.x) / 2, y: tFrom.y)
                 for sy in -(yCellSize / 2)...(yCellSize / 2) {
                     for sx in -(wallSize / 2)...(wallSize / 2) {
-                        matrix[middle.y + sy][middle.x + sx] = Tile.emptyTile.rawValue
+                        matrix[middle.y + sy][middle.x + sx] = Tile.emptyTile.value
                     }
                 }
             }
@@ -174,15 +174,25 @@ class World {
         }
         
         carvePath(from: exitCell, to: neighbor(exitCell, edge))
-        matrix[exitPosition.y][exitPosition.x] = Tile.goalTile.rawValue
+        matrix[exitPosition.y][exitPosition.x] = Tile.goalTile.value
     }
     
     func tile(at position: Position) -> Tile {
-        return Tile(rawValue: matrix[position.y][position.x]) ?? .emptyTile
+        return Tile(value: matrix[position.y][position.x]) ?? .emptyTile
     }
     
-    func entity(at position: Position) -> Entity? {
-        return (entities.first { (entity) -> Bool in
+    func entities(at position: Position, excluding: [Entity] = []) -> [Entity]? {
+        if entities.isEmpty {
+            return nil
+        }
+        
+        return entities.values.filter { (entity) in
+            return entity.position == position && !excluding.contains { entity == $0 }
+        }
+    }
+    
+    func firstEntity(at position: Position) -> Entity? {
+        return (entities.values.first { (entity) -> Bool in
             entity.position == position
         })
     }
@@ -197,7 +207,8 @@ class World {
     
     func randomPosition(impassable: [Tile]) -> Position {
         let position = Position(x: Int(arc4random_uniform(UInt32(lWidth))), y: Int(arc4random_uniform(UInt32(lHeight))))
-        if inWorld(position) && !impassable.contains(tile(at: position)) {
+        // Position only accepted if the position is valid, does not contain impassable tiles, and does not contain entities.
+        if inWorld(position) && !impassable.contains(tile(at: position)) && firstEntity(at: position) == nil {
             return position
         } else {
             return randomPosition(impassable: impassable)
@@ -207,12 +218,25 @@ class World {
     func randomPosition(_ impassable: Tile...) -> Position {
         return randomPosition(impassable: impassable)
     }
+    
+    func add(entity: Entity) {
+        entity.world = self
+        self.entities[entity.id] = entity
+    }
+    
+    func removeEntity(entity: Entity) {
+        removeEntity(id: entity.id)
+    }
+    
+    func removeEntity(id: UUID) {
+        self.entities.removeValue(forKey: id)
+    }
 }
 
 // MARK: World updates -
 extension World {
     func update(_ pass: Entity.NominatedPass) {
-        for entity in entities {
+        for (_, entity) in entities {
             entity.update(pass, world: self)
         }
     }
@@ -220,18 +244,38 @@ extension World {
 
 // MARK: Tile types -
 enum Tile: UnicodeScalar {
-    case wallTile = "#"
-    case emptyTile = " "
-    case goalTile = "X"
-    case playerUpTile = "^"
-    case playerDownTile = "v"
-    case playerLeftTile = "<"
-    case playerRightTile = ">"
-    case trollTile = "T"
-    case testLeftTile = "L"
-    case testRightTile = "R"
-    case testUpTile = "U"
-    case testDownTile = "D"
+    case wallTile =         "#"
+    case emptyTile =        " "
+    case goalTile =         "X"
+    case playerUpTile =     "^"
+    case playerDownTile =   "v"
+    case playerLeftTile =   "<"
+    case playerRightTile =  ">"
+    case trollTile =        "T"
+
+    init?(value: UInt32) {
+        if let tile = Tile(rawValue: UnicodeScalar(Tile.removeAttribute(value))) {
+            self = tile
+        } else {
+            return nil
+        }
+    }
+    
+    var value: UInt32 {
+        return self.rawValue.value
+    }
+    
+    var attributed: UInt32 {
+        return self.rawValue.value | (1 << 31)
+    }
+    
+    static func removeAttribute(_ value: UInt32) -> UInt32 {
+        return value & ~(1 << 31)
+    }
+    
+    static func isAttributed(_ value: UInt32) -> Bool {
+        return (value >> 31) & 0b1 == 0b1
+    }
 }
 
 protocol TileProvider {
