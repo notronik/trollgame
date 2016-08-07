@@ -61,7 +61,7 @@ class Game {
         self.renderer = renderer
         self.inputHandler = inputHandler
         // Generate a maze
-        self.world = World(width: 11, height: 11, mazeWidth: 101, mazeHeight: 51)
+        self.world = World(width: 40, height: 20, mazeWidth: 101, mazeHeight: 51)
         
         NotificationCenter.default.addObserver(self, selector: #selector(Game.keyPressed(_:)), name: .InputKeyPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateNotification(_:)), name: .TerminateGame, object: nil)
