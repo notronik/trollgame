@@ -1,4 +1,4 @@
 # Escape the trolls
 For /r/dailyprogrammer weekly challenge #25
 
-Still a work in progress.
+See the post [here](https://www.reddit.com/r/dailyprogrammer/comments/4vrb8n/weekly_25_escape_the_trolls/d66n8gh) for details.
