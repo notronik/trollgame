@@ -61,7 +61,7 @@ class Game {
         self.renderer = renderer
         self.inputHandler = inputHandler
         // Generate a maze
-        self.world = World(width: 40, height: 20, mazeWidth: 101, mazeHeight: 51)
+        self.world = World(width: 11, height: 11, mazeWidth: 101, mazeHeight: 51)
         
         NotificationCenter.default.addObserver(self, selector: #selector(Game.keyPressed(_:)), name: .InputKeyPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateNotification(_:)), name: .TerminateGame, object: nil)
@@ -73,19 +73,19 @@ class Game {
                             tile: StaticTileProviders.player,
                             (PlayerAttackableComponent(), .attribute),
                             (PlayerInputComponent(), .input),
-                            (MoveBlocksComponent(whitelist: [StaticTileProviders.troll]), .physics), // move blocks before position determined
+                            (MoveBlocksComponent(whitelist: [StaticTileProviders.troll]), .priorityPhysics), // move blocks before position determined
                             // Allow the player to step on a troll (and die)
-                            (EntityPhysicsComponent(whitelist: [StaticTileProviders.troll]), .physics),
-                            (CompleteLevelComponent(), .physics),
+                            (EntityPhysicsComponent(whitelist: [StaticTileProviders.troll]), .priorityPhysics),
+                            (CompleteLevelComponent(), .priorityPhysics),
                             (FollowedByViewportComponent(), .preRender))
         world.add(entity: player)
         
         // Create trolls
-        for _ in 0..<10 {
+        for _ in 0..<20 {
             let troll = Entity(position: world.randomPosition(.wallTile),
                                tile: StaticTileProviders.troll,
                                (TrollAttackableComponent(), .attribute),
-                               (AIInputComponent(target: player, maxLength: 200), .input),
+                               (AIInputComponent(target: player, maxLength: 100), .input),
                                // Allow trolls to be killed by wall tiles
                                (TileAttackComponent(attackedBy: [SingleTile(.wallTile)]), .physics),
                                // Allow a troll to step on a player and kill them
@@ -119,6 +119,7 @@ class Game {
             
             if !skipTurn {
                 world.update(.input)
+                world.update(.priorityPhysics)
                 world.update(.physics)
                 world.update(.attack)
             } else {

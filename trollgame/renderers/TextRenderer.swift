@@ -99,7 +99,8 @@ class TextRenderer: Renderer {
         }
         
         // Render entities
-        for entity in world.entities.values {
+        var entityIterator = world.entities.makeIterator()
+        while let (_, entity) = entityIterator.next() {
             guard world.inViewport(entity.position) else { continue }
             
             // i is row, j is column, but this is reverse of x, y
@@ -133,7 +134,8 @@ class TextRenderer: Renderer {
             }
             
             withColor(pair: color, {
-                mvaddstr(msgY, Int32(offset.x + world.vWidth / 2 - message.stringMessage.characters.count / 2), message.stringMessage)
+                let msgX = offset.x + world.vWidth / 2 - message.stringMessage.characters.count / 2
+                mvaddstr(msgY, Int32(max(0, msgX)), message.stringMessage)
             })
             
             if message.transient {
