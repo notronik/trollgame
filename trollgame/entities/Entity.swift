@@ -52,6 +52,19 @@ enum Direction: UInt32 {
         }
     }
     
+    var opposite: Direction {
+        switch self {
+        case .up:
+            return .down
+        case .down:
+            return .up
+        case .left:
+            return .right
+        case .right:
+            return .left
+        }
+    }
+    
     static func random() -> Direction {
         return Direction(rawValue: arc4random_uniform(UInt32(Direction.cases.count)))!
     }

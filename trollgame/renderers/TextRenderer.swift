@@ -14,6 +14,7 @@ class TextRenderer: Renderer {
     let offset: Position
     
     var message: RenderMessage?
+    var hadHideable = false
     
     init (offset: Position) {
         self.offset = offset
@@ -46,6 +47,7 @@ class TextRenderer: Renderer {
         // Set colors
         createColorPair(.messagePositive, fg: .white, bg: .positive)
         createColorPair(.messageNegative, fg: .white, bg: .negative)
+        createColorPair(.messageInformation, fg: .black, bg: .yellow)
         createColorPair(.wallTile, fg: .gray, bg: .darkGray)
         createColorPair(.bloodiedWallTile, fg: .lightRed, bg: .darkGray)
         createColorPair(.emptyTile, fg: .black, bg: .black)
@@ -116,11 +118,34 @@ class TextRenderer: Renderer {
                 color = .messagePositive
             case .negative:
                 color = .messageNegative
+            case .information:
+                color = .messageInformation
             }
+            
+            let msgY: Int32
+            // transient and info messages display at the bottom of the screen
+            if message.transient || message.type == .information {
+                msgY = Int32(offset.y + world.vHeight)
+                move(msgY, 0)
+                clrtoeol()
+            } else {
+                msgY = Int32(offset.y + 1)
+            }
+            
             withColor(pair: color, {
-                mvaddstr(Int32(offset.y + 1), Int32(offset.x + world.vWidth / 2 - message.stringMessage.characters.count / 2), message.stringMessage)
+                mvaddstr(msgY, Int32(offset.x + world.vWidth / 2 - message.stringMessage.characters.count / 2), message.stringMessage)
             })
+            
+            if message.transient {
+                self.hadHideable = true
+                self.message = nil
+            }
+        } else if hadHideable {
+            hadHideable = false // clear area of transient message
+            move(Int32(offset.y + world.vHeight), 0)
+            clrtoeol()
         }
+        
         refresh()
     }
     
@@ -130,6 +155,11 @@ class TextRenderer: Renderer {
     }
     
     @objc func hideMessage(_ notification: Notification) {
+        guard let message = self.message else { return }
+        if message.transient || message.type == .information {
+            self.hadHideable = true
+        }
+        
         self.message = nil
     }
 }
@@ -178,6 +208,7 @@ extension TextRenderer {
     enum ColorPair: Int16 {
         case messagePositive = 1
         case messageNegative
+        case messageInformation
         case wallTile
         case bloodiedWallTile
         case emptyTile

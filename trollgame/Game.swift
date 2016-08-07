@@ -44,12 +44,14 @@ func ==(lhs: Position, rhs: Position) -> Bool {
 extension NSNotification.Name {
     static let TerminateGame = NSNotification.Name(rawValue: "NVTerminateGame")
     static let TerminateGameAfterInput = NSNotification.Name(rawValue: "NVTerminateGameAfterInput")
+    static let SkipTurn = NSNotification.Name(rawValue: "NVSkipTurn")
 }
 
 // MARK: Game -
 class Game {
     var running = true
     var terminateInput = false
+    var skipTurn = false
     
     let renderer: Renderer
     let inputHandler: InputHandler
@@ -64,6 +66,7 @@ class Game {
         NotificationCenter.default.addObserver(self, selector: #selector(Game.keyPressed(_:)), name: .InputKeyPressed, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateNotification(_:)), name: .TerminateGame, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(Game.terminateAfterInputNotification(_:)), name: .TerminateGameAfterInput, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(Game.skipTurnNotification(_:)), name: .SkipTurn, object: nil)
         
         // Create player
         let player = Entity(position: world.randomPosition(.wallTile, .goalTile),
@@ -114,9 +117,16 @@ class Game {
                 break
             }
             
-            world.update(.input)
-            world.update(.physics)
-            world.update(.attack)
+            if !skipTurn {
+                world.update(.input)
+                world.update(.physics)
+                world.update(.attack)
+            } else {
+                // A turn was skipped, so reset.
+                // Turn skipping means that only the input and rendering stages run.
+                skipTurn = false
+            }
+            
             world.update(.preRender)
             renderer.render(world: world)
             world.update(.postRender)
@@ -143,5 +153,9 @@ class Game {
     
     @objc func terminateAfterInputNotification(_ notification: Notification) {
         terminate(afterInput: true)
+    }
+    
+    @objc func skipTurnNotification(_ notification: Notification) {
+        skipTurn = true
     }
 }

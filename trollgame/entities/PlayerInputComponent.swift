@@ -9,15 +9,26 @@
 import Foundation
 
 class PlayerInputComponent: EntityComponent {
+    struct NotificationKeys {
+        static let enableOppositeMotion = NSNotification.Name(rawValue: "NVInputEnableOppositeMotion")
+        static let disableOppositeMotion = NSNotification.Name(rawValue: "NVInputDisableOppositeMotion")
+    }
+    
     weak var entity: Entity!
     
     var newDirection: Direction? = nil
+    var oppositeMotion = false
     
     func update(world: World) {
         guard let newDirection = newDirection else { return }
         
-        let shouldMove = entity.direction == newDirection
-        entity.direction = newDirection
+        let shouldMove: Bool
+        if !oppositeMotion {
+            shouldMove = entity.direction == newDirection
+            entity.direction = newDirection
+        } else {
+            shouldMove = entity.direction == newDirection.opposite
+        }
         
         if shouldMove {
             entity.newPosition = entity.position + newDirection.deltaPosition
@@ -28,6 +39,8 @@ class PlayerInputComponent: EntityComponent {
     
     func entityBecameAvailable() {
         NotificationCenter.default.addObserver(self, selector: #selector(PlayerInputComponent.inputPressed(_:)), name: .InputKeyPressed, object: nil)
+        entity.notificationCenter.addObserver(self, selector: #selector(PlayerInputComponent.enableOppositeMotionNotification(_:)), name: NotificationKeys.enableOppositeMotion, object: nil)
+        entity.notificationCenter.addObserver(self, selector: #selector(PlayerInputComponent.disableOppositeMotionNotification(_:)), name: NotificationKeys.disableOppositeMotion, object: nil)
     }
     
     @objc func inputPressed(_ notification: Notification) {
@@ -39,18 +52,25 @@ class PlayerInputComponent: EntityComponent {
         switch key {
         case .w:
             newDirection = .up
-            break
         case .a:
             newDirection = .left
-            break
         case .r:
             newDirection = .down
-            break
         case .s:
             newDirection = .right
-            break
+        case .f:
+            NotificationCenter.default.post(name: .SkipTurn, object: nil)
+            entity.notificationCenter.post(name: MoveBlocksComponent.NotificationKeys.toggleGrab, object: nil)
         default:
             break
         }
+    }
+    
+    @objc func enableOppositeMotionNotification(_ notification: Notification) {
+        oppositeMotion = true
+    }
+    
+    @objc func disableOppositeMotionNotification(_ notification: Notification) {
+        oppositeMotion = false
     }
 }

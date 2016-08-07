@@ -43,6 +43,8 @@ class TextInputHandler: InputHandler {
             return .r
         case 115:
             return .s
+        case 102:
+            return .f
         default:
             return .unknown
         }

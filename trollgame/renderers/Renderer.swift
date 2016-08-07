@@ -19,15 +19,17 @@ protocol Renderer {
 
 class RenderMessage: NSObject {
     enum Kind {
-        case positive, negative
+        case positive, negative, information
     }
     
     let stringMessage: String
     let type: Kind
+    let transient: Bool
     
-    init(_ type: Kind, message: String) {
+    init(_ type: Kind, message: String, transient: Bool = false) {
         self.type = type
         self.stringMessage = message
+        self.transient = transient
     }
     
     func send() {

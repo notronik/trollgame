@@ -34,4 +34,5 @@ enum Key: Int {
     case unknown
     case q
     case w, a, r, s
+    case f
 }
