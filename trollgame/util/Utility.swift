@@ -11,7 +11,7 @@ import Foundation
 func flattenTileProviders(_ providers: [TileProvider]) -> Set<Tile> {
     return Set<Tile>(providers.map({ (provider) -> [Tile] in
         provider.containedTiles
-    }).flatten())
+    }).joined())
 }
 
 extension Array {

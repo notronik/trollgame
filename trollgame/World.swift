@@ -255,7 +255,7 @@ enum Tile: UnicodeScalar {
     case trollTile =        "T"
 
     init?(value: UInt32) {
-        if let tile = Tile(rawValue: UnicodeScalar(Tile.removeAttribute(value))) {
+        if let tile = Tile(rawValue: UnicodeScalar(Tile.removeAttribute(value))!) {
             self = tile
         } else {
             return nil

@@ -180,7 +180,7 @@ extension TextRenderer {
         init_pair(pair.rawValue, fg.rawValue, bg.rawValue)
     }
     
-    func withColor(pair: ColorPair, _ block: @noescape () -> Void) {
+    func withColor(pair: ColorPair, _ block: () -> Void) {
         attron(COLOR_PAIR(Int32(pair.rawValue)))
         block()
         attroff(COLOR_PAIR(Int32(pair.rawValue)))

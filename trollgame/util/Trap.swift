@@ -19,7 +19,7 @@ func trap(signal: Signal, action: @convention(c) (Int32) -> ()) {
     
     var signalAction = SignalAction(__sigaction_u: unsafeBitCast(action, to: __sigaction_u.self), sa_mask: 0, sa_flags: 0)
     
-    _ = withUnsafePointer(&signalAction) { actionPointer in
+    _ = withUnsafePointer(to: &signalAction) { actionPointer in
         sigaction(signal.rawValue, actionPointer, nil)
     }
 }
