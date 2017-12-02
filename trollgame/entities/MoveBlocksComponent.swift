@@ -63,7 +63,9 @@ class MoveBlocksComponent: EntityComponent {
         }
         
         // if the previous conditions are met, the block is 'pushed' by swapping the two tiles
-        swap(&world.matrix[sourcePosition.y][sourcePosition.x], &world.matrix[destinationPosition.y][destinationPosition.x])
+        let tempBlock = world.matrix[sourcePosition.y][sourcePosition.x]
+        world.matrix[sourcePosition.y][sourcePosition.x] = world.matrix[destinationPosition.y][destinationPosition.x]
+        world.matrix[destinationPosition.y][destinationPosition.x] = tempBlock
     }
     
     @objc func toggleGrabNotification(_ notification: Notification) {
